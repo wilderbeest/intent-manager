@@ -102,8 +102,17 @@ const findIntent = (utterances: Array<any>, phrase: string) => {
   }
 };
 
+// Methods:
+// addIntent(intent)
+// matchIntent(phrase)
+// addUtterance(utterance)
+// loadUtterances(utterances)
+// loadUtterancesByFile(pathToUtterances)
+
+// What do I do for long interactions?
+
 // TODO: Use EventEmitter to process intent
-// TODO: Expose stream interface for reading from stdin
+// TODO: Expose stream interface for reading from stdin. Should this be a writeable stream?
 class IntentManager extends EventEmitter {
   #intents: any;
   #utterances: Array<any>;
