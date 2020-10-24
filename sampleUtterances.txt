@@ -1,0 +1,11 @@
+HelpIntent help
+HelpIntent please help
+LoginIntent login
+LoginIntent log me in
+LoginIntent sign in
+GetInfoIntent get {object} info
+GetInfoIntent get info for {object}
+GetAllInfoIntent getinfo
+GetAllInfoIntent get info
+GetNotificationsIntent getnotifications
+GetNotificationsIntent get notifications
