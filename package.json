@@ -1,0 +1,24 @@
+{
+  "name": "@wilderbeest/intent-manager",
+  "version": "1.0.0",
+  "description": "Create and manage conversational interactions",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wilderbeest/intent-manager.git"
+  },
+  "keywords": [
+    "conversational",
+    "intent",
+    "manager"
+  ],
+  "author": "David Ragsdale",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wilderbeest/intent-manager/issues"
+  },
+  "homepage": "https://github.com/wilderbeest/intent-manager#readme"
+}
