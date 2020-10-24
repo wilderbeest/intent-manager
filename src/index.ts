@@ -1,3 +1,5 @@
+import { EventEmitter } from 'events';
+
 import Intent from './Intent';
 
 const getUtteranceParts = (phrase: string, slots: Array<any>): Array<any> => {
@@ -83,17 +85,74 @@ const findIntent = (utterances: Array<any>, phrase: string) => {
 
   // Should this be Intent instead of Utterance?
   if (match) {
-    const slotPairs = match.slots.map((slotName: string, idx: number) => ({ name: slotName, value: match.slotValues[idx] }));
+    const slotPairs = match.slots
+      .map((slotName: string, idx: number) => ({ name: slotName, value: match.slotValues[idx] }))
+      .reduce((slots: any, slot: any) => {
+        slots[slot.name] = slot.value;
+        return slots;
+      }, {});
 
     return new Intent({
       utterance: match.phrase,
       phrase, // What the user sends
       name: match.intent,
       slots: slotPairs,
+      slotValues: match.slotValues,
     });
   }
 };
 
+// TODO: Use EventEmitter to process intent
+// TODO: Expose stream interface for reading from stdin
+class IntentManager extends EventEmitter {
+  #intents: any;
+  #utterances: Array<any>;
+
+  constructor() {
+    super();
+
+    this.#intents = {};
+    this.#utterances = [];
+  }
+
+  addIntentHandler(name: string, handler: any) {
+    if (this.#intents[name]) {
+      throw new Error(`Intent "${name}" already has a handler`);
+    }
+
+    this.#intents[name] = handler;
+  }
+
+  addUtterance(utterance: any) {
+    this.#utterances.push(utterance);
+  }
+
+  matchIntent(phrase: string) {
+    const intent = findIntent(this.#utterances, phrase);
+
+    if (!intent) {
+      throw new Error(`Unable to find intent for phrase`);
+    }
+
+    if (!this.#intents[intent.name]) {
+      throw new Error(`Intent "${intent.name}" is not registered`);
+    }
+
+    // What if the request was made as part of an existing interaction?
+    // Should we merge that data with the context?
+    const handlerContext = {
+      name: intent.name,
+      slots: intent.slots,
+      slotValues: intent.slotValues,
+    };
+
+    return {
+      name: intent.name,
+      handle: () => this.#intents[intent.name](handlerContext),
+    };
+  }
+}
+
 export {
-  findIntent,
+  IntentManager,
 };
