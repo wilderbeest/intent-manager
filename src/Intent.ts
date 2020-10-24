@@ -1,9 +1,9 @@
 class Intent {
-  name: string;
-  phrase: string;
-  slots: any;
-  slotValues: Array<any>;
-  utterance: any;
+  readonly name: string;
+  readonly phrase: string;
+  readonly slots: any;
+  readonly slotValues: Array<any>;
+  readonly utterance: any;
 
   constructor(options: any) {
     // TODO: Validate options
@@ -13,6 +13,10 @@ class Intent {
     this.name = options.name;
     this.slots = options.slots || {};
     this.slotValues = options.slotValues || [];
+  }
+
+  toString() {
+    return this.name;
   }
 }
 

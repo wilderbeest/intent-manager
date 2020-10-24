@@ -2,6 +2,12 @@ import { EventEmitter } from 'events';
 
 import Intent from './Intent';
 
+interface Utterance {
+  intent: string,
+  phrase: string,
+  slots: Array<string>,
+}
+
 const getUtteranceParts = (phrase: string, slots: Array<any>): Array<any> => {
   // Build up regex string based on slots to find words NOT part of slot
   const nonSlot = '([\\w ]*)';
@@ -114,25 +120,25 @@ const findIntent = (utterances: Array<any>, phrase: string) => {
 // TODO: Use EventEmitter to process intent
 // TODO: Expose stream interface for reading from stdin. Should this be a writeable stream?
 class IntentManager extends EventEmitter {
-  #intents: any;
-  #utterances: Array<any>;
+  // #intents: any;
+  #utterances: Array<Utterance>;
 
   constructor() {
     super();
 
-    this.#intents = {};
+    // this.#intents = {};
     this.#utterances = [];
   }
 
-  addIntentHandler(name: string, handler: any) {
-    if (this.#intents[name]) {
-      throw new Error(`Intent "${name}" already has a handler`);
-    }
+  // addIntentHandler(name: string, handler: any) {
+  //   if (this.#intents[name]) {
+  //     throw new Error(`Intent "${name}" already has a handler`);
+  //   }
 
-    this.#intents[name] = handler;
-  }
+  //   this.#intents[name] = handler;
+  // }
 
-  addUtterance(utterance: any) {
+  addUtterance(utterance: Utterance) {
     this.#utterances.push(utterance);
   }
 
@@ -143,26 +149,28 @@ class IntentManager extends EventEmitter {
       throw new Error(`Unable to find intent for phrase`);
     }
 
-    if (!this.#intents[intent.name]) {
-      throw new Error(`Intent "${intent.name}" is not registered`);
-    }
+    // if (!this.#intents[intent.name]) {
+    //   throw new Error(`Intent "${intent.name}" is not registered`);
+    // }
 
     // What if the request was made as part of an existing interaction?
     // Should we merge that data with the context?
-    const handlerContext = {
-      name: intent.name,
-      slots: intent.slots,
-      slotValues: intent.slotValues,
-    };
+    // const handlerContext = {
+    //   name: intent.name,
+    //   slots: intent.slots,
+    //   slotValues: intent.slotValues,
+    // };
 
-    return {
-      name: intent.name,
-      handle: () => this.#intents[intent.name](handlerContext),
-    };
+    // return {
+    //   name: intent.name,
+    //   handle: () => this.#intents[intent.name](handlerContext),
+    // };
+    return intent;
   }
 }
 
 export default IntentManager;
 export type {
   IntentManager,
+  Utterance,
 };
