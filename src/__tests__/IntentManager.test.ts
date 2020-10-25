@@ -36,7 +36,7 @@ describe('IntentManager', () => {
     expect(intent.utterance).toBe(baseUtterances[1].phrase);
   });
 
-  it.skip('should allow loading of utterances from a file', async () => {
+  it('should allow loading of utterances from a file', async () => {
     const intentManager = new IntentManager();
 
     await intentManager.loadUtterancesFromFile(path.join(__dirname, '../__fixtures__/sampleUtterances.txt'));
