@@ -41,11 +41,8 @@ const getSlotValues = (utteranceParts: Array<any>, phrase: string) => {
       slots.push(remainingPhrase.substring(slotStartIndex, slotEndIndex));
 
       remainingPhrase = remainingPhrase.substring(slotEndIndex);
-    } else if (utteranceParts[i][0] === '{') {
-      // The rest of the phrase is a slot
-      slots.push(remainingPhrase);
-      remainingPhrase = '';
     } else if (remainingPhrase.length !== utteranceParts[i].length) {
+      // More in the phrase than exists in the utterance
       slots = [];
       break;
     }
