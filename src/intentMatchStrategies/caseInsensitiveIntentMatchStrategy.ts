@@ -1,25 +1,25 @@
 import Intent from '../Intent';
 import type { IntentMatchStrategy } from '../IntentMatchStrategy';
 
+// TODO: Simplify this into splits that don't use regex. Just loop over the slots.
 const getUtteranceParts = (phrase: string, slots: Array<any>): Array<any> => {
-  console.log('getUtteranceParts', phrase, slots);
   // Build up regex string based on slots to find words NOT part of slot
   const nonSlot = '([\\w ]*)';
   let regexStr = `${nonSlot}${slots.map((slotName) => `({${slotName}})${nonSlot}`).join('')}`;
-  console.log('regexStr', regexStr);
   const regex = new RegExp(regexStr, 'g');
 
-  let phraseParts: Array<any> = [];
+  let phraseParts: Array<string> = [];
   let srcMatch;
   while ((srcMatch = regex.exec(phrase)) !== null) {
     if (srcMatch.index === regex.lastIndex) {
       regex.lastIndex++;
     }
     phraseParts = srcMatch.slice(1); // Remove the curly braces
-    console.log('phraseParts', phraseParts);
   }
 
-  return phraseParts;
+  return phraseParts
+    // Remove empty strings
+    .filter(word => !!word);
 };
 
 const getSlotValues = (utteranceParts: Array<any>, phrase: string) => {
@@ -37,10 +37,14 @@ const getSlotValues = (utteranceParts: Array<any>, phrase: string) => {
     // i is the index between slots, so make sure a further slot exists
     if (utteranceParts[i + 1]) {
       const slotStartIndex = utteranceParts[i].length;
-      const slotEndIndex = remainingPhrase.indexOf(utteranceParts[i + 2]);
+      const slotEndIndex = utteranceParts[i + 2] ? remainingPhrase.indexOf(utteranceParts[i + 2]) : remainingPhrase.length;
       slots.push(remainingPhrase.substring(slotStartIndex, slotEndIndex));
 
       remainingPhrase = remainingPhrase.substring(slotEndIndex);
+    } else if (utteranceParts[i][0] === '{') {
+      // The rest of the phrase is a slot
+      slots.push(remainingPhrase);
+      remainingPhrase = '';
     } else if (remainingPhrase.length !== utteranceParts[i].length) {
       slots = [];
       break;

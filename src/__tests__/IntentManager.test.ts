@@ -16,24 +16,46 @@ import baseUtterances from '../__fixtures__/baseUtterances';
 // Allow users to add utterances by a file
 
 describe('IntentManager', () => {
-  it('should return an intent with the name and slot data', () => {
+  it('should return an intent with no slots', () => {
     const intentManager = new IntentManager();
 
     intentManager.addUtterance(baseUtterances[0]);
     intentManager.addUtterance(baseUtterances[1]);
     intentManager.addUtterance(baseUtterances[2]);
 
-    const slotValue = 'user';
-    const phrase = baseUtterances[1].phrase.replace('{object}', slotValue);
+    const phrase = baseUtterances[0].phrase;
 
     const intent = intentManager.matchIntent(phrase);
 
     expect(intent).toBeDefined();
     expect(intent).toBeInstanceOf(Intent);
-    expect(intent.name).toBe(baseUtterances[1].intent);
-    expect(intent.slots.object).toBe(slotValue);
+    expect(intent.name).toBe(baseUtterances[0].intent);
+    expect(intent.slots).toStrictEqual({});
     expect(intent.phrase).toBe(phrase);
-    expect(intent.utterance).toBe(baseUtterances[1].phrase);
+    expect(intent.utterance).toBe(baseUtterances[0].phrase);
+  });
+
+  it('should return an intent with the name and slot data', () => {
+    const intentManager = new IntentManager();
+
+    intentManager.addUtterance(baseUtterances[0]);
+    intentManager.addUtterance(baseUtterances[1]);
+    intentManager.addUtterance(baseUtterances[2]);
+    intentManager.addUtterance(baseUtterances[3]);
+
+    const propertyValue = 'location';
+    const objectValue = 'user';
+    const phrase = baseUtterances[3].phrase.replace('{property}', propertyValue).replace('{object}', objectValue);
+
+    const intent = intentManager.matchIntent(phrase);
+
+    expect(intent).toBeDefined();
+    expect(intent).toBeInstanceOf(Intent);
+    expect(intent.name).toBe(baseUtterances[3].intent);
+    expect(intent.slots.property).toBe(propertyValue);
+    expect(intent.slots.object).toBe(objectValue);
+    expect(intent.phrase).toBe(phrase);
+    expect(intent.utterance).toBe(baseUtterances[3].phrase);
   });
 
   it('should allow loading of utterances from a file', async () => {

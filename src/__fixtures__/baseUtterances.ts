@@ -18,4 +18,12 @@ export default [
       'object',
     ],
   },
+  {
+    intent: 'GetComplexInfoIntent',
+    phrase: 'get {property} for {object}',
+    slots: [
+      'property',
+      'object',
+    ],
+  },
 ];

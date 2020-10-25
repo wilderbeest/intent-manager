@@ -9,3 +9,4 @@ GetAllInfoIntent getinfo
 GetAllInfoIntent get info
 GetNotificationsIntent getnotifications
 GetNotificationsIntent get notifications
+GetComplexInfoIntent get {property} for {object}
