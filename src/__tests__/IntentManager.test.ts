@@ -184,6 +184,28 @@ describe('IntentManager', () => {
     inputStream.write('get user info');
   });
 
+  it('writes async intent handler result to outbound stream when the inbound stream receives a phrase matching an utterance', (done) => {
+    const intentManager = new IntentManager();
+
+    intentManager.loadUtteranceFromString('GetInfo get {object} info');
+
+    intentManager.addIntentHandler({
+      intentName: 'GetInfo',
+      handler: intent => new Promise(resolve => setTimeout(() => resolve(intent.slots.object), 1000)),
+    });
+
+    const inputStream = new PassThrough();
+    const outputStream = new PassThrough();
+    inputStream.pipe(intentManager).pipe(outputStream);
+
+    outputStream.on('data', (message) => {
+      expect(message.toString()).toBe('user');
+      done();
+    });
+
+    inputStream.write('get user info');
+  });
+
   // it('writes error (to stderr?) when the "data" event receives a phrase matching no utterance', () => {
 
   // });
