@@ -69,4 +69,65 @@ describe('IntentManager', () => {
     expect(intent).toBeInstanceOf(Intent);
     expect(intent.name).toBe('GetInfoIntent');
   });
+
+  it('can execute intent handlers which match a phrase', () => {
+    const intentManager = new IntentManager();
+
+    const handler = jest.fn();
+
+    intentManager.loadUtteranceFromString('GetInfo get {object} info');
+    intentManager.addIntentHandler({
+      intentName: 'GetInfo',
+      handler,
+    });
+    intentManager.execute('get user info');
+    
+    expect(handler).toBeCalledTimes(1);
+    expect(handler.mock.calls[0][0].slots.object).toBe('user');
+  });
+
+  it('can execute async intent handlers which match a phrase', async () => {
+    const intentManager = new IntentManager();
+
+    const handler = async (intent: Intent) => {
+      return intent.slots.object;
+    };
+
+    intentManager.loadUtteranceFromString('GetInfo get {object} info');
+    intentManager.addIntentHandler({
+      intentName: 'GetInfo',
+      handler,
+    });
+    const result = await intentManager.execute('get user info');
+
+    expect(result).toBe('user');
+  });
+
+  // it('emits the "intent:found" event when receiving a "match" event, passing extra data back', () => {
+
+  // });
+
+  // it('emits the "intent:notfound" event when receiving a "match" event where no utterances matches', () => {
+
+  // });
+
+  // it('emits the "intent:willHandle" event before executing the intent handler for the phrase passed to an "execute" event', () => {
+
+  // });
+
+  // it('calls the intent handler for a matched intent of a phrase passed to the "data" event', () => {
+
+  // });
+
+  // it('writes intent handler result (to stdout?) when the "data" event receives a phrase matching an utterance', () => {
+
+  // });
+
+  // it('writes error (to stderr?) when the "data" event receives a phrase matching no utterance', () => {
+
+  // });
+
+  // it('writes error (to stderr?) when an error occurs while streaming the matched intent handler', () => {
+
+  // });
 });
