@@ -19,7 +19,9 @@ const getUtteranceParts = (phrase: string, slots: Array<any>): Array<any> => {
 
   return phraseParts
     // Remove empty strings
-    .filter(word => !!word);
+    .filter(word => !!word)
+    // Remove trailing newlines
+    .filter((word, index, arr) => word !== '\n' || index !== (arr.length - 1));
 };
 
 const getSlotValues = (utteranceParts: Array<any>, phrase: string) => {
@@ -85,7 +87,7 @@ const findUtteranceMatch = (utterances: Array<any>, phrase: string): any => {
 const caseInsensitiveMatchStrategy: IntentMatchStrategy = {
   name: 'caseInsensitive',
   match: (utterances, phrase) => {
-    const match = findUtteranceMatch(utterances, phrase);
+    const match = findUtteranceMatch(utterances, phrase.trim());
 
     // Should this be Intent instead of Utterance?
     if (match) {

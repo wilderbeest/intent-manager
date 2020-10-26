@@ -1,4 +1,5 @@
-import { EventEmitter } from 'events';
+// import { EventEmitter } from 'events';
+import { Duplex } from 'stream';
 
 import caseInsensitiveIntentMatchStrategy from './intentMatchStrategies/caseInsensitiveIntentMatchStrategy';
 import EVENT_NAMES from './constants/EVENT_NAMES';
@@ -17,7 +18,7 @@ interface IntentManagerOptions {
 
 // TODO: Use EventEmitter to process intent
 // TODO: Expose stream interface for reading from stdin. Should this be a writeable stream?
-class IntentManager extends EventEmitter {
+class IntentManager extends Duplex {
   #intentHandlers: Array<IntentHandler>;
   #matchStrategy: IntentMatchStrategy;
   #strictIntentHandlers: boolean;
@@ -42,6 +43,21 @@ class IntentManager extends EventEmitter {
     });
   }
 
+  // Must be implemented to make this a working readable stream
+  _read(size: number) {
+    // console.log('writing data', chunk);
+    // this.push(chunk);
+  }
+
+  // Must be implemented to make this a working writable stream
+  _write(chunk: Buffer, enc: BufferEncoding, next: any) {
+    const phrase = chunk.toString();
+    Promise.resolve(this.execute(phrase)).then((output) => {
+      if (output) this.push(output);
+      next();
+    });
+  }
+
   addIntentHandler(intentHandler: IntentHandler) : void {
     if (this.#intentHandlers.find(i => i.intentName === intentHandler.intentName)) {
       throw new Error(`An intent handler with intentName "${intentHandler.intentName}" already exists.`);
@@ -54,8 +70,13 @@ class IntentManager extends EventEmitter {
     this.#utterances.push(utterance);
   }
 
+  destroy() {
+    // Close outbound streams
+    this.push(null);
+  }
+
   execute(phrase: string) : (Promise<any> | any) {
-    const intent = this.#matchStrategy.match(this.#utterances, phrase);
+    const intent = this.matchIntent(phrase);
 
     if (!intent) {
       throw new Error(`No intent found to match phrase "${phrase}"`);
