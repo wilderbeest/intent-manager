@@ -103,17 +103,44 @@ describe('IntentManager', () => {
     expect(result).toBe('user');
   });
 
-  // it('emits the "intent:found" event when receiving a "match" event, passing extra data back', () => {
+  it('emits the "intent:found" event when receiving a "match" event', (done) => {
+    const intentManager = new IntentManager();
 
-  // });
+    intentManager.on('intent:found', (intent) => {
+      expect(intent.name).toBe('GetInfo');
+      expect(intent.slots.object).toBe('user');
+      done();
+    });
 
-  // it('emits the "intent:notfound" event when receiving a "match" event where no utterances matches', () => {
+    intentManager.loadUtteranceFromString('GetInfo get {object} info');
+    intentManager.emit('match', 'get user info');
+  });
 
-  // });
+  it('emits the "intent:notFound" event when receiving a "match" event where no utterances matches', (done) => {
+    const intentManager = new IntentManager();
 
-  // it('emits the "intent:willHandle" event before executing the intent handler for the phrase passed to an "execute" event', () => {
+    intentManager.on('intent:notFound', (intent) => {
+      expect(intent.phrase).toBe(phrase);
+      done();
+    });
 
-  // });
+    intentManager.loadUtteranceFromString('GetInfo get {object} info');
+    const phrase = 'does not match anything';
+    intentManager.emit('match', phrase);
+  });
+
+  it('emits the "intent:willHandle" event before executing the intent handler for the phrase passed to an "execute" event', (done) => {
+    const intentManager = new IntentManager();
+
+    intentManager.on('intent:willHandle', (intent) => {
+      expect(intent.name).toBe('GetInfo');
+      expect(intent.slots.object).toBe('user');
+      done();
+    });
+
+    intentManager.loadUtteranceFromString('GetInfo get {object} info');
+    intentManager.emit('execute', 'get user info');
+  });
 
   // it('calls the intent handler for a matched intent of a phrase passed to the "data" event', () => {
 
