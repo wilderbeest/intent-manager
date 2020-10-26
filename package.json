@@ -1,5 +1,5 @@
 {
-  "name": "@wilderbeest/intent-manager",
+  "name": "@djragsdale/intent-manager",
   "version": "1.0.0",
   "description": "Create and manage conversational interactions",
   "main": "dist/index.js",
