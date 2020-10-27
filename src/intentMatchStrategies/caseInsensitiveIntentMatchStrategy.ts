@@ -31,7 +31,26 @@ const getSlotValues = (utteranceParts: Array<any>, phrase: string) => {
   let i = 0;
   let remainingPhrase = phrase;
   while (i < utteranceParts.length) {
-    if (remainingPhrase.indexOf(utteranceParts[i]) < 0) {
+    // TODO: Instead of advancing 2 every time, only advance 1
+    if (utteranceParts[i][0] === '{') {
+      if (utteranceParts[i + 1]) {
+        const textStartIndex = remainingPhrase.indexOf(utteranceParts[i + 1]);
+        if (textStartIndex < 0) {
+          slots = [];
+          break;;
+        }
+
+        slots.push(remainingPhrase.substring(0, textStartIndex));
+        remainingPhrase = remainingPhrase.substring(textStartIndex);
+      } else {
+        slots.push(remainingPhrase);
+        remainingPhrase = '';
+      }
+      i += 1;
+      continue;
+    }
+
+    if (remainingPhrase.indexOf(utteranceParts[i]) < 0 && utteranceParts[i][0] !== '{') {
       slots = [];
       break;
     }

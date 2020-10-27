@@ -59,6 +59,30 @@ describe('IntentManager', () => {
     expect(intent.utterance).toBe(baseUtterances[3].phrase);
   });
 
+  it('should return an intent that is only a slot', () => {
+    const intentManager = new IntentManager();
+
+    intentManager.loadUtteranceFromString('OpenIntent {text}');
+    const phrase = 'whatever I want';
+    const intent = intentManager.matchIntent(phrase);
+
+    expect(intent).toBeInstanceOf(Intent);
+    expect(intent.name).toBe('OpenIntent');
+    expect(intent.slots.text).toBe(phrase);
+  });
+
+  it('should return an intent that begins with a slot', () => {
+    const intentManager = new IntentManager();
+
+    intentManager.loadUtteranceFromString('GetInfo {property} info for {object}');
+    const intent = intentManager.matchIntent('location info for user');
+
+    expect(intent).toBeInstanceOf(Intent);
+    expect(intent.name).toBe('GetInfo');
+    expect(intent.slots.property).toBe('location');
+    expect(intent.slots.object).toBe('user');
+  });
+
   it('should allow loading of utterances from a file', async () => {
     const intentManager = new IntentManager();
 
